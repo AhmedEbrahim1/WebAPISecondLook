@@ -14,6 +14,8 @@ namespace WebAPISecondLook.Models.Context
         //    base.OnConfiguring(optionsBuilder);
         //}
         public virtual DbSet<Employee> Employees { get; set; }
+        public virtual DbSet<Department> Departments{ get; set; }
+        
         public ApplicationContext(DbContextOptions options):base(options)
         {
             

@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WebAPISecondLook.DTO;
 using WebAPISecondLook.Models;
 using WebAPISecondLook.Models.Context;
 
@@ -33,7 +35,7 @@ namespace WebAPISecondLook.Controllers
         }
         [HttpGet]
         [Route("{id:int}")]
-        public IActionResult GetById(int id)
+        public IActionResult GetById([FromRoute]int id)
         {
             var emp = context.Employees.FirstOrDefault(emp => emp.Id == id);
             if (emp is not null)
@@ -110,8 +112,24 @@ namespace WebAPISecondLook.Controllers
             }
         }
 
-        //consume this api 
 
+        [HttpGet("EmpWithDept/{id:int}")]
+        public IActionResult GetEmployeeNameWithDeptName(int id)
+        {
+            //when return data contain relationship may this cause problem deserialztion
+
+            //json ignore
+            var emp =context.Employees.Include(x=>x.Department).FirstOrDefault(x=>x.Id==id);
+
+            EmpNameWithDeptNameDTO obj = new EmpNameWithDeptNameDTO();
+            obj.Id = emp.Id;
+            obj.EmpName = emp.Name;
+            obj.DeptName = emp.Department?.Name??"empty";
+            return Ok(obj);
+        }
+
+
+        //auto mapper
 
     }
 }

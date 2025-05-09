@@ -12,7 +12,7 @@ using WebAPISecondLook.Models.Context;
 namespace WebAPISecondLook.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20250502173048_init")]
+    [Migration("20250509152043_init")]
     partial class init
     {
         /// <inheritdoc />
