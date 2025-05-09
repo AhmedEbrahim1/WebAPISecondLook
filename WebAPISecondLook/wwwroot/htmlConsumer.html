@@ -1,0 +1,41 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>jQuery AJAX GET Example</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <button id="loadData">Load Data</button>
+    <div id="result"></div>
+
+    <script>
+$(document).ready(function(){
+    $('#loadData').click(function () {
+
+        $.ajax({
+            url: '/api/Employee', // sample API
+            type: 'GET',
+            success: function (response) {
+
+                for (let emp of response) {
+
+                    console.log(emp)
+                    $('#result').append(
+                        '<h3>' + emp.name + '</h3>' +
+                        '<p>' + emp.address + '</p>'
+                    );
+                }
+            },
+            error: function(xhr, status, error) {
+                $('#result').html('Error: ' + error);
+            }
+        });
+
+
+    });
+});
+    </script>
+
+</body>
+</html>

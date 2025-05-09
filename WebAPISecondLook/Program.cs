@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using WebAPISecondLook.Mapper;
 using WebAPISecondLook.Models.Context;
 
 namespace WebAPISecondLook
@@ -22,7 +23,14 @@ namespace WebAPISecondLook
             });
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            builder.Services.AddCors(corsOptions =>
+            {
+                corsOptions.AddPolicy("MyPolicy", corsPolicyOptionBuilder =>
+                {
+                    corsPolicyOptionBuilder.AllowAnyOrigin();
+                });
+            });
+            // builder.Services.AddAutoMapper(new MappingProfile);
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -32,6 +40,8 @@ namespace WebAPISecondLook
                 app.UseSwaggerUI();
             }
 
+            app.UseStaticFiles();
+            app.UseCors("MyPolicy");
             app.UseAuthorization();
 
 
