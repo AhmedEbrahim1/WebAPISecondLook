@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using WebAPISecondLook.IdentityFolder;
 
 namespace WebAPISecondLook.Models.Context
 {
-    public class ApplicationContext:DbContext
+    public class ApplicationContext:IdentityDbContext<ApplicationUser>
     {
         public ApplicationContext()
         {

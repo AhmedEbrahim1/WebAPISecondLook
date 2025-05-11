@@ -1,5 +1,7 @@
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WebAPISecondLook.IdentityFolder;
 using WebAPISecondLook.Mapper;
 using WebAPISecondLook.Models.Context;
 
@@ -31,6 +33,9 @@ namespace WebAPISecondLook
                 });
             });
             // builder.Services.AddAutoMapper(new MappingProfile);
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationContext>();
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
