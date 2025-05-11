@@ -101,7 +101,7 @@ namespace WebAPISecondLook.Controllers
                     var userRoles = await userManager.GetRolesAsync(userExists);
 
 
-                    SigningCredentials signingCredentials = new SigningCredentials()
+                    //SigningCredentials signingCredentials = new SigningCredentials()
 
                     foreach (var roleItem in userRoles)
                     {
