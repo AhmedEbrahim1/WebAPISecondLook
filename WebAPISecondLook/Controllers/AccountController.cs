@@ -109,16 +109,16 @@ namespace WebAPISecondLook.Controllers
                     }
 
 
-                    JwtSecurityToken token =
-                        new JwtSecurityToken(issuer: "http://localhost:5013/",
-                        audience: "http://localhost:4200/",
-                        claims: claims,
-                        expires:DateTime.Now.AddHours(1),
-                        signingCredentials:
+                    //JwtSecurityToken token =
+                    //    new JwtSecurityToken(issuer: "http://localhost:5013/",
+                    //    audience: "http://localhost:4200/",
+                    //    claims: claims,
+                    //    expires:DateTime.Now.AddHours(1),
+                    //    signingCredentials:
 
 
 
-                        );
+                    //    );
 
 
                     return Ok();
