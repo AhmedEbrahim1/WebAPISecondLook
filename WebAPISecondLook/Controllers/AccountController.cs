@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using WebAPISecondLook.DTO;
 using WebAPISecondLook.IdentityFolder;
@@ -15,10 +16,12 @@ namespace WebAPISecondLook.Controllers
     public class AccountController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly IConfiguration configuration;
 
-        public AccountController(UserManager<ApplicationUser> userManager)
+        public AccountController(UserManager<ApplicationUser> userManager, IConfiguration configuration)
         {
             this.userManager = userManager;
+            this.configuration = configuration;
         }
 
         //Register 
@@ -57,7 +60,7 @@ namespace WebAPISecondLook.Controllers
 
             var registerResult = await userManager.CreateAsync(user, userDTO.Password);
 
-            if(! registerResult.Succeeded)
+            if (!registerResult.Succeeded)
             {
                 return BadRequest(registerResult.Errors.FirstOrDefault().Description);
             }
@@ -78,18 +81,18 @@ namespace WebAPISecondLook.Controllers
         public async Task<IActionResult> Login(UserLoginDTO userDTO)
         {
 
-            if(! ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
             var userExists = await userManager.FindByNameAsync(userDTO.Name);
-            if(userExists is not  null)
+            if (userExists is not null)
             {
                 var validUser = await userManager.CheckPasswordAsync(userExists, userDTO.Password);
 
 
-                if(validUser)
+                if (validUser)
                 {
                     //create Token 
 
@@ -97,33 +100,37 @@ namespace WebAPISecondLook.Controllers
 
                     var claims = new List<Claim>();
                     claims.Add(new Claim(ClaimTypes.Name, userExists.UserName));
-                    claims.Add(new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()));
+                    claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
                     var userRoles = await userManager.GetRolesAsync(userExists);
 
 
-                    //SigningCredentials signingCredentials = new SigningCredentials()
+                    SecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JWT:Secret"]));
+
+                    SigningCredentials signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
                     foreach (var roleItem in userRoles)
                     {
-                        claims.Add(new Claim(ClaimTypes.Role,roleItem));
+                        claims.Add(new Claim(ClaimTypes.Role, roleItem));
                     }
 
 
-                    //JwtSecurityToken token =
-                    //    new JwtSecurityToken(issuer: "http://localhost:5013/",
-                    //    audience: "http://localhost:4200/",
-                    //    claims: claims,
-                    //    expires:DateTime.Now.AddHours(1),
-                    //    signingCredentials:
+                    JwtSecurityToken token =
+                        new JwtSecurityToken(issuer: configuration["JWT:ValidIssuer"],
+                        audience: configuration["JWT:ValidAudience"],
+                        claims: claims,
+                        expires: DateTime.Now.AddHours(1),
+                        signingCredentials: signingCredentials
+                        );
 
 
-
-                    //    );
-
-
-                    return Ok();
+                    return Ok(
+                             new
+                             {
+                                 token = new JwtSecurityTokenHandler().WriteToken(token),
+                                 expiration = token.ValidTo
+                             });
                 }
-               
+
             }
             return Unauthorized();
         }

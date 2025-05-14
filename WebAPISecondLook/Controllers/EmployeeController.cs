@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,11 @@ namespace WebAPISecondLook.Controllers
         {
             this.context = context;
         }
+
+
+        //localhost:5013/api/Employee
         [HttpGet]
+        [Authorize]
         public IActionResult GetAll()
         {
             var emps = context.Employees.ToList();
